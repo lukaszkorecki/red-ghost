@@ -12,7 +12,9 @@
 
 (def redis-conf
   {:host (or (System/getenv "REDIS_HOST") "0.0.0.0")
-   :port (or (System/getenv "REDIS_PORT") 6379)})
+   :port (if-let [redis-port (System/getenv "REDIS_PORT")]
+           (Integer/parseInt redis-port)
+           6379)})
 
 (def system
   {
