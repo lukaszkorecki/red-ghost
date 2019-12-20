@@ -1,6 +1,6 @@
 # Red Ghost 🔴👻
 
-<img src="https://www.writeups.org/wp-content/uploads/Red-Ghost-Apes-Fantastic-Four-Marvel-Comics-Kragoff.jpg" align=right heigth="200px" >
+<img src="https://www.writeups.org/wp-content/uploads/Red-Ghost-Apes-Fantastic-Four-Marvel-Comics-Kragoff.jpg" align=right height="200px" >
 
 (Still early days, watch out!)
 
