@@ -2,9 +2,66 @@
 
 <img src="https://www.writeups.org/wp-content/uploads/Red-Ghost-Apes-Fantastic-Four-Marvel-Comics-Kragoff.jpg" align=right height="200px" >
 
-(Still early days, watch out!)
+> Still early days, watch out!
 
-See [dev-resources/example.clj](dev-resources/example.clj)
+# Intro
+
+Simple [Components](http://github.com/stuartsierra/component) for the message queue implementation, powred by [Carmine](https://github.com/ptaoussanis/carmine) (and Redis).
+
+Read [the source](https://github.com/ptaoussanis/carmine/blob/master/src/taoensso/carmine/message_queue.clj) for more info.
+
+## Usage
+
+### Worker
+
+Define a consumer function, it has to return either:
+
+- `:success` - ACK message
+- `:error` - fail
+- `:retry` - retry in a bit
+- `:backoff-ms` - try again in MS
+
+And accept a map of:
+
+- `:message` - the payload sent by the publisher
+- `:component` - Component dependencies for the worker, e.g. database connection, redis client etc
+
+```clojure
+(defn handler [{:keys [message component]}]
+  (let [{:keys [db-conn email]} component
+        {:keys [user-id body]} message
+        email (:email (db/find-user db-conn user-id))]
+    (email/send email {:to email :body body})
+    :success))
+
+```
+
+Then define the system:
+
+```clojure
+(def system
+  {:db-conn (some.db/connection)
+   :email (email/client)
+   :publisher (publisher/create {:redis {:host "localhost" :port 6379}})
+   :worker (component/using
+            (worker/create {:redis {:host "localhost" :port 6379}
+                            :queue :users.email
+                            :handler handler})
+            [:db-conn :email])})
+```
+
+And you're ready. To publish a message you need to use the `red-ghost.component.publisher` namespace. It ships with the `Publisher` protocol:
+
+```clojure
+(publisher/publish (:publisher system) :users.email  {:user-id "abc" :body "hi!"})
+```
+
+
+
+
+# Example
+
+See [dev-resources/example.clj](dev-resources/example.clj) for a runnable example.
 
 Run with `lein run -m clojure.main dev-resources/example.clj`
 
