@@ -11,5 +11,6 @@
                                    :password :env/clojars_password}}
 
   :min-lein-version "2.9.0"
+  :license "MIT"
   :profile {:dev {:resource-paths ["dev-resources"]
                   :dependencies [[ch.qos.logback/logback-classic "1.2.3"]]}})
